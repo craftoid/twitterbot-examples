@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*- #
 
 from twitterbot import TwitterBot
+import keys
+import aiml
 
 class AliceBot(TwitterBot):
     def bot_init(self):
@@ -26,14 +28,14 @@ class AliceBot(TwitterBot):
         ######################################
 
         # how often to tweet, in seconds
-        self.config['tweet_interval'] = 30 * 60     # default: 30 minutes
+        self.config['tweet_interval'] = 1 * 60     # default: 1 minutes
 
         # use this to define a (min, max) random range of how often to tweet
         # e.g., self.config['tweet_interval_range'] = (5*60, 10*60) # tweets every 5-10 minutes
         self.config['tweet_interval_range'] = None
 
         # only reply to tweets that specifically mention the bot
-        self.config['reply_direct_mention_only'] = False
+        self.config['reply_direct_mention_only'] = True
 
         # only include bot followers (and original tweeter) in @-replies
         self.config['reply_followers_only'] = True
@@ -69,6 +71,10 @@ class AliceBot(TwitterBot):
         # self.register_custom_handler(self.my_function, 60 * 60 * 24)
 
 
+        self.alice = aiml.Kernel()
+        self.alice.learn("german.aiml")
+
+
     def on_scheduled_tweet(self):
         """
         Make a public tweet to the bot's own timeline.
@@ -80,8 +86,7 @@ class AliceBot(TwitterBot):
         # text = function_that_returns_a_string_goes_here()
         # self.post_tweet(text)
 
-        raise NotImplementedError("You need to implement this to tweet to timeline (or pass if you don't want to)!")
-        
+        pass 
 
     def on_mention(self, tweet, prefix):
         """
@@ -108,7 +113,18 @@ class AliceBot(TwitterBot):
         # if something:
         #     self.favorite_tweet(tweet)
 
-        raise NotImplementedError("You need to implement this to reply to/fav mentions (or pass if you don't want to)!")
+        tweetsize = 140 - len(prefix) - 1
+
+        try:
+            question = tweet.text
+            response = self.alice.respond(question)
+            text = prefix + " " + response
+            text = text[:140]
+            print(text)
+            self.post_tweet(text, reply_to=tweet)
+
+        except Exception as e:
+            print(e)
 
 
     def on_timeline(self, tweet, prefix):
@@ -135,10 +151,9 @@ class AliceBot(TwitterBot):
         # call this to fav the tweet!
         # if something:
         #     self.favorite_tweet(tweet)
-
-        raise NotImplementedError("You need to implement this to reply to/fav timeline tweets (or pass if you don't want to)!")
-
+        pass
+        
 
 if __name__ == '__main__':
-    bot = MyTwitterBot()
+    bot = AliceBot()
     bot.run()
