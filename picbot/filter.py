@@ -4,12 +4,13 @@ This module contains filter functions to modify images
 
 """
 
-from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageColor
+from PIL import Image, ImageDraw, ImageFilter, ImageColor
 from textwrap import wrap
 
 import numpy as np
 import colorsys
-import random
+
+r = 100
 
 def flip(img):
     """ flip an image head over heels """
@@ -21,18 +22,11 @@ def blur(source_img):
     return img.filter(ImageFilter.BLUR)
 
 
-def sort(img, fn=None, amount=None, horizontal=True, reverse=False):
+def sort(img, fn=None, horizontal=True, reverse=False):
     """ pixel sorting using numpy """
 
     # get image dimensions
     ymax, xmax = img.size
-
-    # if no amount of sorting is given, sort to the max
-    if amount is None:
-        if horizontal:
-            amount = xmax
-        else:
-            amount = ymax
 
     if fn is None:
         fn = brightness
@@ -44,31 +38,19 @@ def sort(img, fn=None, amount=None, horizontal=True, reverse=False):
     # sorting columns of pixels
     if horizontal is True:
 
-        # create a list of sorting points for partial sorting
-        # sample = random.sample(range(ymax), amount)
-
         # iterate over all the rows
         for x in range(xmax):
             row = a1[x,:,:]
             a2[x,:,:] = sorted(row, key=fn, reverse=reverse)
-            # a2[x,:,:] = np.sort(row, axis=0)
-            # a2[x,:,:] = np.partition(row, sample, axis=0)
-
 
     # sorting rows of pixels
     else:
-
-        # create a list of sorting points for partial sorting
-        # sample = random.sample(range(xmax), amount)
 
         # iterate over all columns
         for y in range(ymax):
             col = a1[:,y,:]
             a2[:,y,:] = sorted(col, key=fn, reverse=reverse)
-            # a2[:,y,:] = np.sort(col, axis=0)
-            # a2[:,y,:] = np.partition(col, sample, axis=0)
-
-
+  
     # turn the array back into an image
     a2 = np.uint8(a2)
     out = Image.fromarray(a2)
@@ -89,7 +71,7 @@ def redness(c):
 
 def yellowness(c):
     """ return the amount of yellow """
-   
+    r, g, b = c
     return r * 0.5 + g * 0.5
 
 def hue(c):
@@ -105,12 +87,18 @@ if __name__ == "__main__":
     img = Image.open("test.jpg")
 
     # filter the image
-    # img = blur(img)
-    img = sort(img, fn=hue, reverse=True, horizontal=True)
-
+    img2 = sort(img, fn=max)
 
     # show it
-    img.show()
+    img2.show()
+
+    # filter the image
+    img3 = sort(img, fn=sum)
+
+    # show it
+    img3.show()
+
+
 
 
 
