@@ -180,19 +180,27 @@ class AwkwardBot(TwitterBot):
 
 
 	def on_mention(self, tweet, prefix):
-		""" Actions to take when a mention is received. """
+		"""
+		Actions to take when a mention is received.
+		"""
 		pass # don't do anything here ...
 
 
 	def on_timeline(self, tweet, prefix):
-		""" Actions to take on a timeline tweet. """
+		"""
+		Actions to take on a timeline tweet.
+		"""
 		pass # Don't do anything here ...
 
 	def destroy_all_tweets(self):
-		""" Delete everything we ever tweeted """
+		""" 
+		Delete everything we ever tweeted
+		"""
 		total = 0
 		while True:
-			timeline = self.api.user_timeline(count=2)
+			# Maximum number of tweets we can get at once is 800
+			# See https://dev.twitter.com/rest/reference/get/statuses/home_timeline
+			timeline = self.api.user_timeline(count=800)
 			n = len(timeline)
 			if n > 0:
 				print("Deleting {} tweets.".format(n))
@@ -202,6 +210,7 @@ class AwkwardBot(TwitterBot):
 			else:
 				print("Done.")
 				break
+
 		self.log("Deleted {} tweets".format(total))
 
 if __name__ == '__main__':
