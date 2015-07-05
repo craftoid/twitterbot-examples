@@ -1,6 +1,6 @@
 # About
 
-[Awkward Bot](https://twitter.com/pic_bot) this bot tweets an awkward family picture every hour.
+[Awkward Bot](https://twitter.com/awk_bot) this bot tweets an awkward family picture every hour.
 
 # Install the VirtualEnv
 
